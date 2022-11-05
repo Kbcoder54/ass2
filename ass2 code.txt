@@ -1,0 +1,67 @@
+int sumNodes(Node *N){
+
+    if(N == NULL){
+         return 0;
+    }
+    return (N->data + sumNodes(N->left) + sumNodes(N->right));
+
+
+}
+
+
+float avgSubtree(Node *N)
+{
+	// TODO: Implement this function
+	if(N == NULL){
+        return -1;
+	}
+	int sum = sumNodes(N);
+	int num = countNodes(N);
+
+	float avg = sum / num;
+	return avg;
+
+}
+
+
+// This functions converts an unbalanced BST to a balanced BST
+void inorderarr(Node* root,Node **arr,int *k){
+    if(root == NULL){
+        return;
+    }
+    inorderarr(root->left,arr,k);
+    arr[(*k)++] = root;
+    inorderarr(root->right,arr,k);
+
+}
+Node* help(Node **arr,int low,int high){
+    Node* temp;
+    if(low>high){
+        return NULL;
+    }
+    int mid = (low+high)/2;
+
+    temp = arr[mid];
+    temp->left = help(arr,low,mid-1);
+    temp->right = help(arr,mid+1,high);
+
+    return temp;
+
+
+}
+Node* balanceTree(Node* root)
+{
+	// TODO: Implement this function
+	Node* newroot;
+	int count = countNodes(root);
+	int k = 0;
+	Node **arr;
+
+	arr = (Node**) malloc(sizeof(count));
+	inorderarr(root,arr,&k);
+
+	newroot = help(arr,0,count-1);
+	free(arr);
+	return newroot;
+
+}
