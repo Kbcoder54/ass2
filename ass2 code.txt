@@ -1,67 +1,93 @@
-int sumNodes(Node *N){
+Node* addNode(Node *root, int value){
 
-    if(N == NULL){
-         return 0;
+    Node* newnode = newNode(value);
+
+    Node* x = root;
+
+    Node* y = NULL;
+    while (x != NULL) {
+
+
+
+        y = x;
+        if (value < x->data){
+            x = x->right;
+        }
+        else if (value > x->data){
+            x = x->left;
+        }
+        else{
+            y = NULL;
+            newnode = NULL;
+            break;
+        }
     }
-    return (N->data + sumNodes(N->left) + sumNodes(N->right));
 
+
+    if (y == NULL){
+
+        y = newnode;
+    }
+
+    else if (value > y->data){
+        y->left = newnode;
+    }
+
+    else if (value < y-> data){
+        y->right = newnode;
+    }
+
+
+    return root;
 
 }
 
 
-float avgSubtree(Node *N)
-{
-	// TODO: Implement this function
-	if(N == NULL){
-        return -1;
-	}
-	int sum = sumNodes(N);
-	int num = countNodes(N);
-
-	float avg = sum / num;
-	return avg;
-
-}
 
 
-// This functions converts an unbalanced BST to a balanced BST
-void inorderarr(Node* root,Node **arr,int *k){
+
+
+
+
+
+void inorderarr(Node* root,int *arr,int *k){
     if(root == NULL){
         return;
     }
-    inorderarr(root->left,arr,k);
-    arr[(*k)++] = root;
+
     inorderarr(root->right,arr,k);
+    arr[(*k)++] = root->data;
+    inorderarr(root->left,arr,k);
+
 
 }
-Node* help(Node **arr,int low,int high){
-    Node* temp;
+Node* help(int *arr,int low,int high){
     if(low>high){
         return NULL;
     }
     int mid = (low+high)/2;
 
-    temp = arr[mid];
-    temp->left = help(arr,low,mid-1);
-    temp->right = help(arr,mid+1,high);
+    Node* root = newNode(arr[mid]);
+    root->left = help(arr,low,mid-1);
+    root->right = help(arr,mid+1,high);
 
-    return temp;
+    return root;
 
 
 }
 Node* balanceTree(Node* root)
 {
 	// TODO: Implement this function
-	Node* newroot;
+	//Node* newroot;
 	int count = countNodes(root);
 	int k = 0;
-	Node **arr;
+	int *arr;
 
-	arr = (Node**) malloc(sizeof(count));
+	//arr = calloc(count, sizeof(Node*));
+	arr = (int*) malloc(count * sizeof(int));
 	inorderarr(root,arr,&k);
 
-	newroot = help(arr,0,count-1);
+	root = help(arr,0,count-1);
 	free(arr);
-	return newroot;
-
+	return root;
 }
