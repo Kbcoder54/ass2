@@ -11,7 +11,7 @@ Place for the BST functions from Exercise 1.
 */
 
 
-int avgSubtree(Node *N)
+float avgSubtree(Node *N)
 {
 
 	// TODO: Implement this function
