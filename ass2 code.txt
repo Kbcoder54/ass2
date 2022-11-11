@@ -1,3 +1,141 @@
+int parseInt (char c) {
+    return c - '0';
+}
+
+
+
+char *trimwhitespace(char *str)
+{
+  char *end;
+
+  // Trim leading space
+  while(isspace((unsigned char)*str)) str++;
+
+  if(*str == 0)  // All spaces?
+    return str;
+
+  // Trim trailing space
+  end = str + strlen(str) - 1;
+  while(end > str && isspace((unsigned char)*end)) end--;
+
+  // Write new null terminator character
+  end[1] = '\0';
+
+  return str;
+}
+
+
+void *downtime() {
+
+    balanceTree(root);
+}
+void executer(char *function,int num,char* client){
+    if(strcmp(function,"addNode") == 0 && num != 0){
+            root = addNode(root,num);
+            //printf("%sinsertNode %d\n",client,num);
+    }
+    else if(strcmp(function,"removeNode") == 0 && num != 0){
+            root = removeNode(root,num);
+            //printf("%sremoveNode %d\n",client,num);
+    }
+    else if(strcmp(function,"countNodes") == 0){
+            int c = 1;
+            //printf("%scountNodes= %d\n",client,c);
+    }
+    else if(strcmp(function,"avgSubtree") == 0){
+            int avg = avgSubtree(root);
+            //printf("%savgSubtree= %d\n",client,avg);
+    }
+    else{
+        printf("%s",client);
+        printf("Nothing happened\n");
+    }
+}
+
+void *ServeClient(char *client) {
+    //printf("works or what?\n");
+    pthread_mutex_t mutex1 = PTHREAD_MUTEX_INITIALIZER;
+    pthread_rwlock_t lock = PTHREAD_RWLOCK_INITIALIZER;
+    FILE* fp [5];
+    for ( int i = 0 ; i < 5 ; i++ ) {
+        fp[i] = fopen(client,"r");
+        if(fp[i] == NULL){
+            printf("Cannot open file\n");
+            exit(1);
+        }
+        char* str[20];
+        while (fgets(str,20,fp[i]) != NULL) {
+            //pthread_rwlock_rdlock(&lock);
+            char* token;
+            char* rest = str;
+            int count = 0;
+            char* function;
+            int num;
+            while ((token = strtok_r(rest," \n",&rest))){
+                pthread_rwlock_rdlock(&lock);
+                count++;
+                printf("Token%d:%s\n", count,token);
+                if(count == 1){
+                    function = token;
+                    /*printf("-%s-:%s\n",function,client);
+                    if(function == "addNode"){
+                        printf("It works!");
+                    }*/
+                }
+                else if(count == 2){
+                    num = atoi(token);
+                    //printf("%d\n",num);
+                }
+                //pthread_mutex_lock(&mutex1);
+                //executer(function,num,client);
+                //pthread_mutex_unlock(&mutex1);
+                /*if(function == "addNode" && num != 0){
+                    root = addNode(root,num);
+                    printf("%sinsertNode %d\n",client,num);
+                }
+                if(function == "removeNode" && num != 0){
+                    root = removeNode(root,num);
+                    printf("%sremoveNode %d\n",client,num);
+                }
+                if(function == "countNodes"){
+                    int c = countNodes(root);
+                    printf("%scountNodes= %d\n",client,c);
+                }
+                if(function == "avgSubtree"){
+                    int avg = avgSubtree(root);
+                    printf("%savgSubtree= %d\n",client,avg);
+                }*/
+                pthread_rwlock_unlock(&lock);
+            }
+            //printf("%s",str);
+
+        }
+        fclose(fp[i]);
+}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Node* addNode(Node *root, int value){
 
     Node* newnode = newNode(value);
