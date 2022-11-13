@@ -1,3 +1,280 @@
+Node* newNode(int data){
+    Node *temp = (Node *)malloc(sizeof(Node));
+    if(temp!=NULL){
+       temp -> data = data;
+       temp -> left = NULL;
+       temp -> right = NULL;
+    }
+
+    return temp;
+}
+Node* addNode(Node *root, int data)
+{
+  Node *newNode = malloc(sizeof(Node));
+  newNode->data = data;
+  newNode->left = NULL;
+  newNode->right = NULL;
+
+  Node *temp;
+  Node *prev = NULL;
+
+  temp = root;
+  while(temp) {
+    prev = temp;
+    if (temp->data > newNode->data)
+      temp = temp->right;
+    else if (temp->data < newNode->data)
+      temp = temp->left;
+    else {
+      free(newNode);
+      return NULL;
+    }
+  }
+  if (prev==NULL)
+    root = newNode;
+  else {
+    if (prev->data > newNode->data)
+      prev->right = newNode;
+    else
+      prev->left = newNode;
+  }
+
+  return root;
+}
+
+Node* freeSubtree(Node *N) {
+  if (N == NULL)
+    return NULL;
+  freeSubtree(N->left);
+  freeSubtree(N->right);
+  free(N);
+  return N;
+}
+
+void removeSubtreeWorker(Node *R, int data) {
+  if (R == NULL)
+    return;
+
+  if (R->left && R->left->data == data) {
+    freeSubtree(R->left);
+    R->left = NULL;
+    return;
+  }
+
+  if (R->right && R->right->data == data) {
+    freeSubtree(R->right);
+    R->right = NULL;
+    return;
+  }
+
+  if (R->data < data)
+    removeSubtreeWorker(R->left, data);
+  else
+    removeSubtreeWorker(R->right, data);
+}
+
+Node* removeSubtree(Node *R, int data) {
+  if (R == NULL)
+    return NULL;
+
+  if (R->data == data) {
+    freeSubtree(R);
+    return NULL;
+  }
+  removeSubtreeWorker(R, data);
+  return R;
+}
+
+void displaySubtree(Node *N)
+{
+  if (N==NULL)
+    {
+      return ;
+    }
+  displaySubtree(N->right);
+  printf("%d\n", N->data);
+  displaySubtree(N->left);
+}
+
+int countNodes(Node *N)
+{
+  int count=0;
+  if(N==NULL)
+    return 0;
+  count = count + countNodes(N->right);
+  count = count + countNodes(N->left);
+  count = count + 1;
+  return count;
+}
+
+// this is the most complicated task
+Node* removeNode(Node* root, int data)
+{
+  // Ensure root isn't null.
+  if (root == NULL) {
+    return NULL;
+  }
+
+  if (data > root->data) {  // data is in the left sub-tree.
+    root->left = removeNode(root->left, data);
+  } else if (data < root->data) { // data is in the right sub-tree.
+    root->right = removeNode(root->right, data);
+  } else { // Found the correct node with data
+    // Check the three cases - no child, 1 child, 2 child...
+    // No Children
+    if (root->left == NULL && root->right == NULL) {
+      free(root);
+      root = NULL;
+    }
+    // 1 child (on the right)
+    else if (root->left == NULL) {
+      Node *temp = root; // save current node
+      root = root->right;
+      free(temp);
+    }
+    // 1 child (on the left)
+    else if (root->right == NULL) {
+      Node *temp = root; // save current node
+      root = root->left;
+      free(temp);
+    }
+    // Two children
+    else {
+      // find minimal data of right sub tree
+      Node *temp = root->left;
+      while(temp->right != NULL) {
+        temp = temp->right;
+      }
+      root->data = temp->data; // duplicate the node
+      root->left = removeNode(root->left, root->data); // delete the duplicate node
+    }
+  }
+  return root; // parent node can update reference
+}
+
+int numberLeaves(Node *N) {
+  if (N == NULL)
+    return 0;
+
+  if (N->left == NULL && N->right == NULL)
+    return 1;
+
+  return numberLeaves(N->left) + numberLeaves(N->right);
+}
+
+int nodeDepth(Node *R, Node *N) {
+  if (R == NULL || N == NULL)
+    return -1;
+
+  if (R == N)
+    return 0;
+
+  int subDepth = nodeDepth(R->data < N->data ? R->left : R->right, N);
+
+  if (subDepth >= 0)
+    return subDepth + 1;
+  else
+    return -1;
+}
+
+/*int countNodes(Node *root){
+
+
+        if(root==NULL){
+            return 0;
+        }
+
+
+
+        return 1 + countNode(root->left) + countNode(root->right);
+}*/
+int sumNodes(Node *N){
+
+    if(N == NULL){
+         return 0;
+    }
+    return (N->data + sumNodes(N->left) + sumNodes(N->right));
+
+
+}
+
+
+float avgSubtree(Node *N)
+{
+	// TODO: Implement this function
+	if(N == NULL){
+        return -1;
+	}
+	int sum = sumNodes(N);
+	int num = countNodes(N);
+
+	float avg = (float) sum / num;
+	return avg;
+
+}
+
+
+
+
+
+
+
+
+
+char* str;
+        while (fgets(str,20,fp[i]) != NULL) {
+            //pthread_rwlock_rdlock(&lock);
+            char* token;
+            char* rest = str;
+            int count = 0;
+            char* function;
+            int num;
+            while ((token = strtok_r(rest," \n",&rest))){
+                pthread_rwlock_rdlock(&lock);
+                count++;
+                printf("Token%d:%s\n", count,token);
+                if(count == 1){
+                    function = token;
+                    /*printf("-%s-:%s\n",function,client);
+                    if(function == "addNode"){
+                        printf("It works!");
+                    }*/
+                }
+                else if(count == 2){
+                    num = atoi(token);
+                    //printf("%d\n",num);
+                }
+                //pthread_mutex_lock(&mutex1);
+                //executer(function,num,client);
+                //pthread_mutex_unlock(&mutex1);
+                /*if(function == "addNode" && num != 0){
+                    root = addNode(root,num);
+                    printf("%sinsertNode %d\n",client,num);
+                }
+                if(function == "removeNode" && num != 0){
+                    root = removeNode(root,num);
+                    printf("%sremoveNode %d\n",client,num);
+                }
+                if(function == "countNodes"){
+                    int c = countNodes(root);
+                    printf("%scountNodes= %d\n",client,c);
+                }
+                if(function == "avgSubtree"){
+                    int avg = avgSubtree(root);
+                    printf("%savgSubtree= %d\n",client,avg);
+                }*/
+                pthread_rwlock_unlock(&lock);
+            }
+            break;
+            //printf("%s",str);
+
+
+
+
+
+
+
+
 int parseInt (char c) {
     return c - '0';
 }
